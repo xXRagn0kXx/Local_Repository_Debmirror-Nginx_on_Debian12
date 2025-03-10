@@ -1,0 +1,2 @@
+# Local_Repository_Debmirror-Nginx_on_Debian12
+Debian12 granular local repository
