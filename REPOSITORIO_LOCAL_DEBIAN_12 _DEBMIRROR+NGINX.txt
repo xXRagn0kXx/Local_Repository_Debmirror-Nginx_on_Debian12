@@ -1,0 +1,217 @@
+	REPOSITORIO LOCAL DEBIAN 12  DEBMIRROR + NGINX
+	
+			En esta guia aprenderemos a crear un repositorio local de Debian12 desde 0(Omitiremos la instalacion de Debian12 en esta guia), el repositorio sera granular y se podra actualizar cada vez deseemos
+			para ello lo primero haremos sera crear la estructura donde se alojara el repositorio en nuestro Debian12 recien instalado:
+
+		PRE-REQUISITOS:
+			- Usuario con permisos sudo o tener permisos root
+			- Conexion a internet desde la maquina a configurar
+			- Conocimientos medios de informatica o entender el uso de la guia
+			- Una maquina virtual o fisica que tendra un disco para el sistema Debian y otro para el repositorio (200Gb ideal)
+
+
+		1. Crear el Directorio para el Repositorio
+
+			Primero, crearemos el directorio donde se guardará el repositorio, para ello montaremos un segundo volumen en nuestra maquina Debian12 en la ruta /mnt/Almacen:
+
+				 - sudo mkdir -p /mnt/Almacen/mirror
+
+
+			1.1 Ahora si no hemos introducido el segundo disco en la maquina lo introducimos, nos hacemos root con "su -" o "sudo su" e identificamos el disco:
+				- lsblk
+
+			1.2 Una vez indentificado el disco a tratar, si tiene alguna configuracion previa la limpiaremos (si esta en blanco saltar este paso):
+				- sudo fdisk /dev/sdX (reemplaza /dev/sdX con el nombre de tu disco).	
+				- Presiona d para eliminar una partición. Repite esto para eliminar todas las particiones.
+				- Presiona w para escribir los cambios en el disco.
+				- Presiona q para salir de fdisk
+
+			1.3 Ahora que el disco esta en blanco vamos a proceder a crearle una particion, usaremos el formato GPT ya que es el actual:
+
+				- sudo fdisk /dev/sdX (reemplaza /dev/sdX con el nombre de tu disco)
+				- Presiona m para ver el menu
+				- Presiona g para crear la tabla de particiones en formato GPT 
+				- Presiona n para crear una nueva particion (le vamos a intro en los valores por defecto hasta crear la particion)
+				- Presiona w para escribir los cambios en el disco
+				- Presiona q para salir de fdisk
+
+				Ahora comprobamos que se a creado una particion dentro del disco /dev/sdX1 haciendo lsblk
+
+			1.4 Lo siguiente es darle formato a la particion del disco, nosotros usaremos ext4 por su rendimiento y estabilidad en linux: 
+				- mkfs.ext4 /dev/sdX1
+			
+			1.5 Ahora que el disco ya es completamnete utilizable por el sistema vamnos a configurar  su montaje automatico, el primer paso es localizar la UUID que se a generado en la particion al darle formato al disco:
+				- blkid
+				Nos mostrara un listado de todos los discos disponibles, apuntamos solo la UUID del que nos interesa /dev/sdX1
+
+			1.6 Procedemos a crear su montaje automatico:
+				- nano /etc/fstab 
+
+				Crearemos una nueva linea debajo del todo (por orden, recomendamos una linea comentada del uso del disco)
+
+					# Disco2 Almacen del repositorio
+					UUID=08e21b2a-3eeb-4a60-8bbb-56a2c17b4d72	/mnt/Almacen ext4 defaults,auto		0 	0
+
+					Importante quitar las "" del campo UUID y asegurarnos que la ruta referenciada existe previamente
+
+					Guardamos y salimos
+
+			1.7 Recargamos la confoguracion del fichero 
+
+					- systemctl daemon-reload
+
+			1.8 Montamos el disco y si no da ningun error comprobamos que la ruta creada tiene el tamaño del disco
+					- mount -a
+					- df -h
+
+					Esta es una linea de ejemplo si estubiera montado en /dev/sdb1
+					/dev/sb1	916G	276GB	595G	32%	/mnt/Almacen
+			
+			1.9 Con el disco montado le daremos propietario y permisos al usuario que gestionara el repositorio, nosotros en la instalacion de Debian12 creamos el usuario debmirror:
+
+					- chown -R debmirror:debmirror /mnt/Almacen
+					- chmod -R 775 /mnt/Alamcen
+
+				Con esto ya tenemos configurado el almacenamiento fisico del repositorio. 
+
+			2. Instalar el software nesario:
+					- sudo apt install -y debmirror rsync nginx gnupg debian-archive-keyring
+
+			3. Configurar los script de debmirror
+				Crear el script de sincronización para que utilice el nuevo directorio en /mnt/Almacen/mirror, esta configuracion se divide en 2 repositorios globales, el main para los paquetes principales y el security para las actualizaciones de seguridad 
+				
+				3.1	crear el script main:
+
+					 - nano /usr/local/bin/sync_mirror_main.sh
+
+#!/bin/bash
+# Script para actualizar el repositorio local de Debian 12 (Bookworm)
+# Se ejecuta como usuario debmirror
+
+# Directorio donde se guardara el mirror
+MIRROR_DIR="/mnt/Repositorio"
+
+# Parametros de debmirror:
+# - --arch: arquitectura (amd64)
+# - --nosource: omite los paquetes fuente (si no los necesitas)
+# - --host: el mirror de origen. Puedes usar un servidor HTTP o RSYNC.
+#   Aquí se usa el servidor HTTP de ftp.debian.org. Si prefieres rsync,
+#   cambia --method y --host según corresponda.
+# - --method: método de transferencia (http o rsync)
+# - --dist: distribuciones a sincronizar.
+#   Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
+#       bookworm, bookworm-updates, bookworm-security
+# - --section: secciones a incluir (main, contrib, non-free)
+# - --ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG)
+# - --progress: muestra progreso (opcional)
+debmirror \
+  --arch=amd64 "$MIRROR_DIR" \
+  --nosource \
+  --root=debian \
+  --host=ftp.debian.org \
+  --method=http \
+  --dist=bookworm,bookworm-updates \
+  --verbose \
+  --keyring=/usr/share/keyrings/debian-archive-keyring.gpg \
+  --progress \
+  --section=main,contrib,non-free \
+# --dry-run \
+# --ignore-release-gpg \
+
+##############################################################################################################################################
+					Se comentan los parametros --dry-run e --ignore-release-gpg, y se descomentan segun sea necesario su uso.
+
+
+				3.2	crear el script security
+
+					- nano /usr/local/bin/sync_mirror_security.sh
+
+
+#!/bin/bash
+# Sincronizar repositorio de seguridad (bookworm-security) desde security.debian.org
+# Se ejecuta como usuario debmirror
+
+# Directorio donde se guardara el mirror
+MIRROR_DIR="/mnt/Repositorio"
+
+# Parametros de debmirror:
+# - --arch: arquitectura (amd64)
+# - --nosource: omite los paquetes fuente (si no los necesitas)
+# - --host: el mirror de origen. Puedes usar un servidor HTTP o RSYNC.
+#   Aqu   se usa el servidor HTTP de ftp.debian.org. Si prefieres rsync,
+#   cambia --method y --host seg  n corresponda.
+# - --method: m  todo de transferencia (http o rsync)
+# - --dist: distribuciones a sincronizar.
+#   Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
+#       bookworm, bookworm-updates, bookworm-security
+# - --section: secciones a incluir (main, contrib, non-free)
+# - --ignore-release-gpg: omite la verificaci  n de firmas (opcional;   salo si tienes problemas con GPG)
+# - --progress: muestra progreso (opcional)
+debmirror \
+  --arch=amd64 "$MIRROR_DIR" \
+  --nosource \
+  --root=debian-security \
+  --host=security.debian.org \
+  --method=http \
+  --dist=bookworm-security \
+  --verbose \
+  --keyring=/usr/share/keyrings/debian-archive-keyring.gpg \
+  --progress \
+  --section=main,contrib,non-free \
+# --dry-run \
+#  --ignore-release-gpg \
+
+	Se comentan los parametros --dry-run e --ignore-release-gpg, y se descomentan segun sea necesario su uso.
+
+##############################################################################################################################################
+
+	4. Configurar nginx para Servir el Repositorio desde /mnt/Almacen
+		Actualiza la configuración de nginx para reflejar la nueva ubicación del repositorio.
+
+	4.1	Edita la configuración de nginx:
+		 - sudo nano /etc/nginx/sites-available/mirror
+
+	4.2	Modifica el bloque location para que apunte al nuevo directorio:
+
+server {
+    listen 80;
+    server_name tu_servidor_o_ip;
+
+    location /debian {
+        alias /mnt/Almacen/mirror;
+        autoindex on;
+    }
+}
+##############################################################################################################################################
+	4.3	Recarga la configuración de nginx para aplicar los cambios:
+		 - sudo nginx -t
+		 - sudo systemctl reload nginx
+
+	4.4 Verificar Acceso desde el Cliente
+		Para comprobar que el repositorio local funciona correctamente, en los clientes agrega las siguientes entradas en /etc/apt/sources.list:
+			deb http://tu_servidor_o_ip/debian bookworm main contrib non-free
+			deb http://tu_servidor_o_ip/debian bookworm-updates main contrib non-free
+
+
+	4.5 Actualizar el repositorio periódicamente
+		Para mantener el repositorio sincronizado, configura un cron que ejecute el script de actualización cada cierto tiempo. Por ejemplo, puedes configurarlo para que se ejecute semanalmente:
+
+	4.5.1	Edita el archivo de cron:
+		- sudo crontab -e
+	4.5.2	Agrega la siguiente línea para ejecutar el script de actualización cada semana (por ejemplo, los lunes a las 3 am):
+
+0 3 * * 1 /usr/local/bin/sync-debian-mirror.sh >> /var/log/debmirror.log 2>&1
+
+		Esto almacenará los logs de debmirror en /var/log/debmirror.log.
+
+##############################################################################################################################################	
+
+	5. Verificación y solución de problemas
+		 - Verificar logs: Revisa /var/log/debmirror.log para verificar si hay errores de sincronización.
+		 - Probar acceso: En las máquinas clientes, ejecuta sudo apt update para asegurarte de que puedan conectarse y actualizarse desde el repositorio 	local.
+
+
+PARA REPOSTORIO SIN FIRMAR:
+
+deb [trusted=yes] http://tu_servidor_o_ip/debian bookworm main contrib non-free
+deb [trusted=yes] http://tu_servidor_o_ip/debian bookworm-updates main contrib non-free
