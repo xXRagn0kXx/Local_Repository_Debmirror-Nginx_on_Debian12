@@ -8,6 +8,7 @@
 			- Conexion a internet desde la maquina a configurar
 			- Conocimientos medios de informatica o entender el uso de la guia
 			- Una maquina virtual o fisica que tendra un disco para el sistema Debian y otro para el repositorio (200Gb ideal)
+			- Se aconseja crear un usuario para el repositorio durante la instalacion de Debian12, nosotros hemos creado "DebMirror"
 
 
 		1. Crear el Directorio para el Repositorio
@@ -62,6 +63,7 @@
 
 			1.8 Montamos el disco y si no da ningun error comprobamos que la ruta creada tiene el tamaño del disco
 					- mount -a
+				Comprobamos la unidad montada:
 					- df -h
 
 					Esta es una linea de ejemplo si estubiera montado en /dev/sdb1
@@ -70,7 +72,7 @@
 			1.9 Con el disco montado le daremos propietario y permisos al usuario que gestionara el repositorio, nosotros en la instalacion de Debian12 creamos el usuario debmirror:
 
 					- chown -R debmirror:debmirror /mnt/Almacen
-					- chmod -R 775 /mnt/Alamcen
+					- chmod -R 775 /mnt/Almacen
 
 				Con esto ya tenemos configurado el almacenamiento fisico del repositorio. 
 
@@ -78,7 +80,8 @@
 					- sudo apt install -y debmirror rsync nginx gnupg debian-archive-keyring
 
 			3. Configurar los script de debmirror
-				Crear el script de sincronización para que utilice el nuevo directorio en /mnt/Almacen/mirror, esta configuracion se divide en 2 repositorios globales, el main para los paquetes principales y el security para las actualizaciones de seguridad 
+				Crear el script de sincronización para que utilice el nuevo directorio en /mnt/Almacen/mirror, esta configuracion se divide en 2 repositorios principales,
+				el main para los paquetes principales y el security para las actualizaciones de seguridad 
 				
 				3.1	crear el script main:
 
@@ -92,23 +95,28 @@
 MIRROR_DIR="/mnt/Repositorio"
 
 # Parametros de debmirror:
-# - --arch: arquitectura (amd64)
-# - --nosource: omite los paquetes fuente (si no los necesitas)
-# - --host: el mirror de origen. Puedes usar un servidor HTTP o RSYNC.
-#   Aquí se usa el servidor HTTP de ftp.debian.org. Si prefieres rsync,
-#   cambia --method y --host según corresponda.
-# - --method: método de transferencia (http o rsync)
-# - --dist: distribuciones a sincronizar.
-#   Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
+#   --arch: arquitectura (amd64)
+#   --nosource: omite los paquetes fuente (si no los necesitas)
+#	--root: Raiz del repositorio
+#   --host: el mirror de origen. Puedes usar un servidor HTTP o RSYNC.
+#   	En esta guia se usa el servidor HTTP de deb.debian.org. Si prefieres rsync,
+#   	cambia --method y --host según corresponda.
+#   --method: método de transferencia (http o rsync)
+#   --dist: distribuciones a sincronizar.
+#   	Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
 #       bookworm, bookworm-updates, bookworm-security
-# - --section: secciones a incluir (main, contrib, non-free)
-# - --ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG)
-# - --progress: muestra progreso (opcional)
+#   --section: secciones a incluir (main, contrib, non-free)
+#   --progress: muestra progreso (opcional)
+#	--verbose: Depura todo lo posible la salida de debmirror
+#	--keyring: Ruta donde esta alojado el anillo de claves del repositorio oficial
+#	--dry-run: Recorre el repostorio oficial y analiza todo lo que necesita descargar pero sin llegar hacerlo.
+#   --ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG,(no recomendado))
+		
 debmirror \
   --arch=amd64 "$MIRROR_DIR" \
   --nosource \
   --root=debian \
-  --host=ftp.debian.org \
+  --host=deb.debian.org \
   --method=http \
   --dist=bookworm,bookworm-updates \
   --verbose \
@@ -118,9 +126,9 @@ debmirror \
 # --dry-run \
 # --ignore-release-gpg \
 
-##############################################################################################################################################
-					Se comentan los parametros --dry-run e --ignore-release-gpg, y se descomentan segun sea necesario su uso.
+# NOTA: Comentar o descomentar los parametros --dry-run e --ignore-release-gpg, segun sea necesario su uso.
 
+##############################################################################################################################################
 
 				3.2	crear el script security
 
@@ -135,18 +143,22 @@ debmirror \
 MIRROR_DIR="/mnt/Repositorio"
 
 # Parametros de debmirror:
-# - --arch: arquitectura (amd64)
-# - --nosource: omite los paquetes fuente (si no los necesitas)
-# - --host: el mirror de origen. Puedes usar un servidor HTTP o RSYNC.
-#   Aqu   se usa el servidor HTTP de ftp.debian.org. Si prefieres rsync,
-#   cambia --method y --host seg  n corresponda.
-# - --method: m  todo de transferencia (http o rsync)
-# - --dist: distribuciones a sincronizar.
-#   Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
+#   --arch: arquitectura (amd64)
+#   --nosource: omite los paquetes fuente (si no los necesitas)
+#	--root: Raiz del repositorio
+#   --host: el mirror de origen. Puedes usar un servidor HTTP o RSYNC.
+#   	En esta guia se usa el servidor HTTP de deb.debian.org. Si prefieres rsync,
+#   	cambia --method y --host según corresponda.
+#   --method: método de transferencia (http o rsync)
+#   --dist: distribuciones a sincronizar.
+#   	Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
 #       bookworm, bookworm-updates, bookworm-security
-# - --section: secciones a incluir (main, contrib, non-free)
-# - --ignore-release-gpg: omite la verificaci  n de firmas (opcional;   salo si tienes problemas con GPG)
-# - --progress: muestra progreso (opcional)
+#   --section: secciones a incluir (main, contrib, non-free)
+#   --progress: muestra progreso (opcional)
+#	--verbose: Depura todo lo posible la salida de debmirror
+#	--keyring: Ruta donde esta alojado el anillo de claves del repositorio oficial
+#	--dry-run: Recorre el repostorio oficial y analiza todo lo que necesita descargar pero sin llegar hacerlo.
+#   --ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG,(no recomendado))
 debmirror \
   --arch=amd64 "$MIRROR_DIR" \
   --nosource \
@@ -161,14 +173,14 @@ debmirror \
 # --dry-run \
 #  --ignore-release-gpg \
 
-	Se comentan los parametros --dry-run e --ignore-release-gpg, y se descomentan segun sea necesario su uso.
+# NOTA: Comentar o descomentar los parametros --dry-run e --ignore-release-gpg, segun sea necesario su uso.
 
 ##############################################################################################################################################
 
-	4. Configurar nginx para Servir el Repositorio desde /mnt/Almacen
-		Actualiza la configuración de nginx para reflejar la nueva ubicación del repositorio.
+	4. Configurar nginx para Servir el Repositorio desde /mnt/Almacen/mirror
+		Creamos la configuración de nginx para reflejar la nueva ubicación del repositorio.
 
-	4.1	Edita la configuración de nginx:
+	4.1	Crea el siguiente fichero para Ngix:
 		 - sudo nano /etc/nginx/sites-available/mirror
 
 	4.2	Modifica el bloque location para que apunte al nuevo directorio:
@@ -183,7 +195,11 @@ server {
     }
 }
 ##############################################################################################################################################
-	4.3	Recarga la configuración de nginx para aplicar los cambios:
+	
+	4.2 Activamos el sitio creado en Nginx mediante un enlace simbolco a la ruta sites-enabled:
+		 - sudo ln -s /etc/nginx/sites-available/mirror /etc/nginx/sites-enabled/
+	
+	4.3	Prueba y recarga la configuración de nginx para aplicar los cambios:
 		 - sudo nginx -t
 		 - sudo systemctl reload nginx
 
@@ -193,12 +209,12 @@ server {
 			deb http://tu_servidor_o_ip/debian bookworm-updates main contrib non-free
 
 
-	4.5 Actualizar el repositorio periódicamente
+	4.6 Actualizar el repositorio periódicamente
 		Para mantener el repositorio sincronizado, configura un cron que ejecute el script de actualización cada cierto tiempo. Por ejemplo, puedes configurarlo para que se ejecute semanalmente:
 
-	4.5.1	Edita el archivo de cron:
+	4.7.1	Edita el archivo de cron:
 		- sudo crontab -e
-	4.5.2	Agrega la siguiente línea para ejecutar el script de actualización cada semana (por ejemplo, los lunes a las 3 am):
+	4.8.2	Agrega la siguiente línea para ejecutar el script de actualización cada semana (por ejemplo, los lunes a las 3 am):
 
 0 3 * * 1 /usr/local/bin/sync-debian-mirror.sh >> /var/log/debmirror.log 2>&1
 
