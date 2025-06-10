@@ -122,7 +122,7 @@ debmirror \
   --verbose \
   --keyring=/usr/share/keyrings/debian-archive-keyring.gpg \
   --progress \
-  --section=main,contrib,non-free \
+  --section=main,contrib,non-free,non-free-firmware \
 # --dry-run \
 # --ignore-release-gpg \
 
