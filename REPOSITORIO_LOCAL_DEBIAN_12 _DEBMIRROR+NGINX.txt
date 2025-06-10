@@ -81,7 +81,7 @@
 					- sudo apt install -y debmirror rsync nginx gnupg debian-archive-keyring
 
 			3. Configurar los script de debmirror
-				Crear el script de sincronización para que utilice el nuevo directorio en /mnt/Almacen/mirror, esta configuracion se divide en 2 repositorios principales,
+				Crear el script de sincronización para que utilice el nuevo directorio en "/mnt/Almacen/Repositorio", esta configuracion se divide en 2 repositorios principales,
 				el main para los paquetes principales y el security para las actualizaciones de seguridad 
 				
 				3.1	crear el script main:
