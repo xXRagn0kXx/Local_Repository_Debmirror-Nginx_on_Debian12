@@ -284,11 +284,12 @@ deb http://YOUR_IP_OR_DNS/Repositorio/Debian12/security/ bookworm-security main 
 
 	4.7.1	Edita el archivo de cron:
 		- sudo crontab -e
-	4.8.2	Agrega la siguiente línea para ejecutar el script de actualización cada semana (por ejemplo, los lunes a las 3 am):
+	4.8.2	Agrega la siguiente línea para ejecutar el script de actualización cada 6 horas:
 
-0 3 * * 1 /usr/local/bin/sync-debian-mirror.sh >> /var/log/debmirror.log 2>&1
+	0 */6 * * * /usr/local/bin/deb12_main_repo.sh
+	0 */6 * * * /usr/local/bin/deb12_security_repo.sh
 
-		Esto almacenará los logs de debmirror en /var/log/debmirror.log.
+	Nota: Compobar que las tareas se ejecutan en /mnt/Almacen/Repositorio/
 
 ##############################################################################################################################################	
 
