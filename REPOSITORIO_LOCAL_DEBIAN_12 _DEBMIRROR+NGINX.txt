@@ -257,14 +257,13 @@ server {
 #deb http://security.debian.org bookworm-security main contrib
 
 # Repositorio principal replica (Bookworm):
-deb http://192.168.10.112/Repositorio/Debian12/main/ bookworm main contrib non-free non-free-firmware
+deb http://YOUR_IP_OR_DNS/Repositorio/Debian12/main/ bookworm main contrib non-free non-free-firmware
 
 # Reposiotio actualizaciones replica (Bookworm-Updates):
-deb http://192.168.10.112/Repositorio/Debian12/main/ bookworm-updates main contrib non-free non-free-firmware
+deb http://YOUR_IP_OR_DNS/Repositorio/Debian12/main/ bookworm-updates main contrib non-free non-free-firmware
 
 # Repositorio seguridad  replica (Bookworm-Security):
-deb http://192.168.10.112/Repositorio/Debian12/Security/ bookworm-security main contrib non-free non-free-firmware
-
+deb http://YOUR_IP_OR_DNS/Repositorio/Debian12/security/ bookworm-security main contrib non-free non-free-firmware
 
 ###############################################################################################################################################
 		
