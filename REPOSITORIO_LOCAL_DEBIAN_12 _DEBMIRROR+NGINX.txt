@@ -123,19 +123,21 @@ echo ""
 #       --dry-run: Recorre el repostorio oficial y analiza todo lo que necesita descargar pero sin llegar hacerlo.
 #	--ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG,(no recomendado)).
 #	--rsync-extra=none: omite el uso de Rync para que no se quede esperando al repositorio de Debian (usa HTTP).
+#	--no-remove: No elimina paquetes antiguos.
 
 debmirror \
   --arch=amd64 "$MIRROR_DIR" \
   --nosource \
   --root=debian \
   --host=deb.debian.org \
-  --method=http \
+  --method=https \
   --dist=bookworm,bookworm-updates \
   --verbose \
   --keyring=/usr/share/keyrings/debian-archive-keyring.gpg \
   --progress \
   --section=main,contrib,non-free,non-free-firmware \
   --rsync-extra=none \
+# --no-remove
 # --dry-run \
 # --ignore-release-gpg \
 
@@ -188,6 +190,7 @@ echo ""
 #       --dry-run: Recorre el repostorio oficial y analiza todo lo que necesita descargar pero sin llegar hacerlo.
 #	--ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG,(no recomendado)).
 #	--rsync-extra=none: omite el uso de Rync para que no se quede esperando al repositorio de Debian (usa HTTP).
+#	--no-remove: No elimina paquetes antiguos
 
 debmirror \
   --arch=amd64 "$MIRROR_DIR" \
@@ -201,6 +204,7 @@ debmirror \
   --progress \
   --section=main,contrib,non-free,non-free-firmware \
   --rsync-extra=none \
+# --no-remove \
 # --dry-run \
 #  --ignore-release-gpg \
 # NOTA: Comentar o descomentar los parametros "--dry-run" y  "--ignore-release-gpg", segun sea necesario su uso.
