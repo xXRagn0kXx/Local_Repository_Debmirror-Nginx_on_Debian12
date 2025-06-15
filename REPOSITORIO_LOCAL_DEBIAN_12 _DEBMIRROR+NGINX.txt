@@ -284,7 +284,7 @@ deb http://YOUR_IP_OR_DNS/Repositorio/Debian12/security/ bookworm-security main 
 
 	4.7.1	Edita el archivo de cron:
 		- sudo crontab -e
-	4.8.2	Agrega la siguiente línea para ejecutar el script de actualización cada 6 horas:
+	4.8.2	Agrega la siguiente línea para ejecutar el script de actualización cada 6 horas, debmirror analizara las diferencias y solo descargara lo que cambie o aparezca nuevo:
 
 	0 */6 * * * /usr/local/bin/deb12_main_repo.sh
 	0 */6 * * * /usr/local/bin/deb12_security_repo.sh
