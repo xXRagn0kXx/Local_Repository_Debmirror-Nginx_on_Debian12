@@ -255,14 +255,22 @@ server {
 		 - sudo nginx -t
 		 - sudo systemctl reload nginx
 
-	4.4 Actualizar el repositorio periódicamente
-		Para mantener el repositorio actualizado, configura un cron que ejecute el script de actualización cada cierto tiempo.
+	4.4 Actualizar el repositorio manual o periódicamente
+		
+	4.4.1.1	Manual:
+		 - sudo /usr/local/bin/deb12_main_repo.sh
+		 - sudo /usr/local/bin/deb12_security_repo.sh
 
-	4.4.1	Edita el archivo de cron:
+			Nota: Al estar los script en  "/usr/local/bin/" podemos llamarlos directamente tabulandolos por su nombre. 
+		Automatico:				
+		Para mantener el repositorio actualizado la mejor opcion configurar un cron que ejecute el script de actualización cada cierto tiempo.
+
+	4.4.1.2	Edita el archivo de cron:
 		- sudo crontab -e
+	
 	4.4.2	Agrega la siguiente línea para ejecutar el script de actualización cada 6 horas, debmirror analizara las diferencias y solo descargara lo que cambie o aparezca nuevo:
 
-	0 */6 * * * /usr/local/bin/deb12_main_repo.sh
+	0 */6 * * * 
 	0 */6 * * * /usr/local/bin/deb12_security_repo.sh
 
 	Nota: Compobar que las tareas se ejecutan en /mnt/Almacen/Repositorio/*.log
