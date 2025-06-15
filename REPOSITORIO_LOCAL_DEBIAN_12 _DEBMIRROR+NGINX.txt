@@ -84,7 +84,7 @@
 				Crear el script de sincronización para que utilice el nuevo directorio en "/mnt/Almacen/Repositorio", esta configuracion se divide en 2 repositorios principales,
 				el main para los paquetes principales y el security para las actualizaciones de seguridad 
 				
-				3.1	crear el script main:
+			3.1	crear el script main:
 
 					 - nano /usr/local/bin/deb12_main_repo.sh
 
@@ -137,7 +137,7 @@ debmirror \
   --progress \
   --section=main,contrib,non-free,non-free-firmware \
   --rsync-extra=none \
-# --no-remove
+# --no-remove \
 # --dry-run \
 # --ignore-release-gpg \
 
@@ -150,7 +150,7 @@ echo ""
 
 ##############################################################################################################################################
 
-				3.2	crear el script security
+			3.2	crear el script security
 
 					- nano /usr/local/bin/deb12_security_repo.sh
 
