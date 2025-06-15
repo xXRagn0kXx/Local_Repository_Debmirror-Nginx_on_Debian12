@@ -94,10 +94,10 @@
 # La idea es dejarlo en un crontab para que actualice el mirror periodicamente solo.
 
 # Directorio donde se guardara el mirror
-MIRROR_DIR="/mnt/Almacen/Repositorio/"
+MIRROR_DIR="/mnt/Almacen/Repositorio/Debian12/main/"
 
 # Directorio donde se Almacenara el log.
-LOG_FILE="/mnt/Almacen/Repositorio/Main_Repo.log"
+LOG_FILE="/mnt/Almacen/Repositorio/Deb12_Main_Repo.log"
 
 #A partir de aqui empezara la grabacion del log.
 exec >> "$LOG_FILE" 2>&1
@@ -156,10 +156,10 @@ echo ""
 # Se ejecuta como usuario debmirror
 
 # Directorio donde se guardara el mirror
-MIRROR_DIR="/mnt/Almacen/Repositorio"
+MIRROR_DIR="/mnt/Almacen/Repositorio/Debian12/security/"
 
 # Directorio donde se Almacenara el log.
-LOG_FILE="/mnt/Almacen/Repositorio/Security_Repo.log"
+LOG_FILE="/mnt/Almacen/Repositorio/Deb12_Security_Repo.log"
 
 #A partir de aqui empezara la grabacion del log.
 exec >> "$LOG_FILE" 2>&1
