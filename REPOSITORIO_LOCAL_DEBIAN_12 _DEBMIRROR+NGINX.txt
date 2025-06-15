@@ -177,6 +177,9 @@ debmirror \
 # NOTA: Comentar o descomentar los parametros --dry-run e --ignore-release-gpg, segun sea necesario su uso.
 
 ##############################################################################################################################################
+		Una vez creados los script le damos permisos y propietario al usuario que lo vaya a ejecutar.
+		 - chown debmirror:debmirror /usr/local/bin/sync_mirror_*
+		 - chmod 750 /usr/local/bin/sync_mirror*
 
 	4. Configurar nginx para Servir el Repositorio desde /mnt/Almacen/Repositorio
 		Creamos la configuración de nginx para reflejar la nueva ubicación del repositorio.
