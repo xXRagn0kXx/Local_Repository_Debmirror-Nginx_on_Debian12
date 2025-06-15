@@ -116,12 +116,13 @@ echo ""
 #   --dist: distribuciones a sincronizar.
 #       Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
 #       bookworm, bookworm-updates, bookworm-security
-#   --section: secciones a incluir (main, contrib, non-free)
-#   --progress: muestra progreso (opcional)
-#       --verbose: Depura todo lo posible la salida de debmirror
-#       --keyring: Ruta donde esta alojado el anillo de claves del repositorio oficial
+#	--section: secciones a incluir (main, contrib, non-free).
+# 	--progress: muestra progreso (opcional).
+#       --verbose: Depura todo lo posible la salida de debmirror.
+#       --keyring: Ruta donde esta alojado el anillo de claves del repositorio oficial.
 #       --dry-run: Recorre el repostorio oficial y analiza todo lo que necesita descargar pero sin llegar hacerlo.
-#   --ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG,(no recomendado))
+#	--ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG,(no recomendado)).
+#	--rsync-extra=none: omite el uso de Rync para que no se quede esperando al repositorio de Debian (usa HTTP).
 
 debmirror \
   --arch=amd64 "$MIRROR_DIR" \
@@ -134,10 +135,11 @@ debmirror \
   --keyring=/usr/share/keyrings/debian-archive-keyring.gpg \
   --progress \
   --section=main,contrib,non-free,non-free-firmware \
+  --rsync-extra=none \
 # --dry-run \
 # --ignore-release-gpg \
 
-# NOTA: Comentar o descomentar los parametros --dry-run e --ignore-release-gpg, segun sea necesario su uso.
+# NOTA: Comentar o descomentar los parametros "--dry-run" y "--ignore-release-gpg", segun sea necesario su uso.
 
 # Finalizar grabacion del log.
 echo ""
@@ -169,22 +171,24 @@ echo ""
 
 
 # Parametros de debmirror:
-#   --arch: arquitectura (amd64)
-#   --nosource: omite los paquetes fuente (si no los necesitas)
-#       --root: Raiz del repositorio
-#   --host: el mirror de origen. Puedes usar un servidor HTTP o RSYNC.
+#   --arch: arquitectura (amd64).
+#   --nosource: omite los paquetes fuente (si no los necesitas).
+#       --root: Raiz del repositorio.
+#   	--host: el mirror de origen. Puedes usar un servidor HTTP o RSYNC.
 #       En esta guia se usa el servidor HTTP de deb.debian.org. Si prefieres rsync,
 #       cambia --method y --host según corresponda.
-#   --method: método de transferencia (http o rsync)
-#   --dist: distribuciones a sincronizar.
+#   	--method: método de transferencia (http o rsync).
+#   	--dist: distribuciones a sincronizar.
 #       Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
 #       bookworm, bookworm-updates, bookworm-security
-#   --section: secciones a incluir (main, contrib, non-free)
-#   --progress: muestra progreso (opcional)
-#       --verbose: Depura todo lo posible la salida de debmirror
-#       --keyring: Ruta donde esta alojado el anillo de claves del repositorio oficial
+#	--section: secciones a incluir (main, contrib, non-free).
+#	--progress: muestra progreso (opcional).
+#       --verbose: Depura todo lo posible la salida de debmirror.
+#       --keyring: Ruta donde esta alojado el anillo de claves del repositorio oficial.
 #       --dry-run: Recorre el repostorio oficial y analiza todo lo que necesita descargar pero sin llegar hacerlo.
-#   --ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG,(no recomendado))
+#	--ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG,(no recomendado)).
+#	--rsync-extra=none: omite el uso de Rync para que no se quede esperando al repositorio de Debian (usa HTTP).
+
 debmirror \
   --arch=amd64 "$MIRROR_DIR" \
   --nosource \
@@ -196,9 +200,10 @@ debmirror \
   --keyring=/usr/share/keyrings/debian-archive-keyring.gpg \
   --progress \
   --section=main,contrib,non-free,non-free-firmware \
+  --rsync-extra=none \
 # --dry-run \
 #  --ignore-release-gpg \
-# NOTA: Comentar o descomentar los parametros --dry-run e --ignore-release-gpg, segun sea necesario su uso.
+# NOTA: Comentar o descomentar los parametros "--dry-run" y  "--ignore-release-gpg", segun sea necesario su uso.
 
 # Finalizar grabacion del log.
 echo ""
