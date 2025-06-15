@@ -89,30 +89,40 @@
 					 - nano /usr/local/bin/sync_mirror_main.sh
 
 #!/bin/bash
+
 # Script para actualizar el repositorio local de Debian 12 (Bookworm)
-# Se ejecuta como usuario debmirror
+# La idea es dejarlo en un crontab para que actualice el mirror periodicamente solo.
 
 # Directorio donde se guardara el mirror
-MIRROR_DIR="/mnt/Almacen/Repositorio"
+MIRROR_DIR="/mnt/Almacen/Repositorio/"
+
+# Directorio donde se Almacenara el log.
+LOG_FILE="/mnt/Almacen/Repositorio/Main_Repo.log"
+
+#A partir de aqui empezara la grabacion del log.
+exec >> "$LOG_FILE" 2>&1
+echo ""
+echo "=== Iniciando sincronización: $(date) ==="
+echo ""
 
 # Parametros de debmirror:
 #   --arch: arquitectura (amd64)
 #   --nosource: omite los paquetes fuente (si no los necesitas)
-#	--root: Raiz del repositorio
+#       --root: Raiz del repositorio
 #   --host: el mirror de origen. Puedes usar un servidor HTTP o RSYNC.
-#   	En esta guia se usa el servidor HTTP de deb.debian.org. Si prefieres rsync,
-#   	cambia --method y --host según corresponda.
+#       En esta guia se usa el servidor HTTP de deb.debian.org. Si prefieres rsync,
+#       cambia --method y --host según corresponda.
 #   --method: método de transferencia (http o rsync)
 #   --dist: distribuciones a sincronizar.
-#   	Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
+#       Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
 #       bookworm, bookworm-updates, bookworm-security
 #   --section: secciones a incluir (main, contrib, non-free)
 #   --progress: muestra progreso (opcional)
-#	--verbose: Depura todo lo posible la salida de debmirror
-#	--keyring: Ruta donde esta alojado el anillo de claves del repositorio oficial
-#	--dry-run: Recorre el repostorio oficial y analiza todo lo que necesita descargar pero sin llegar hacerlo.
+#       --verbose: Depura todo lo posible la salida de debmirror
+#       --keyring: Ruta donde esta alojado el anillo de claves del repositorio oficial
+#       --dry-run: Recorre el repostorio oficial y analiza todo lo que necesita descargar pero sin llegar hacerlo.
 #   --ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG,(no recomendado))
-		
+
 debmirror \
   --arch=amd64 "$MIRROR_DIR" \
   --nosource \
@@ -129,6 +139,11 @@ debmirror \
 
 # NOTA: Comentar o descomentar los parametros --dry-run e --ignore-release-gpg, segun sea necesario su uso.
 
+# Finalizar grabacion del log.
+echo ""
+echo "=== Sincronización finalizada: $(date) ==="
+echo ""
+
 ##############################################################################################################################################
 
 				3.2	crear el script security
@@ -143,22 +158,32 @@ debmirror \
 # Directorio donde se guardara el mirror
 MIRROR_DIR="/mnt/Almacen/Repositorio"
 
+# Directorio donde se Almacenara el log.
+LOG_FILE="/mnt/Almacen/Repositorio/Security_Repo.log"
+
+#A partir de aqui empezara la grabacion del log.
+exec >> "$LOG_FILE" 2>&1
+echo ""
+echo "=== Iniciando sincronización: $(date) ==="
+echo ""
+
+
 # Parametros de debmirror:
 #   --arch: arquitectura (amd64)
 #   --nosource: omite los paquetes fuente (si no los necesitas)
-#	--root: Raiz del repositorio
+#       --root: Raiz del repositorio
 #   --host: el mirror de origen. Puedes usar un servidor HTTP o RSYNC.
-#   	En esta guia se usa el servidor HTTP de deb.debian.org. Si prefieres rsync,
-#   	cambia --method y --host según corresponda.
+#       En esta guia se usa el servidor HTTP de deb.debian.org. Si prefieres rsync,
+#       cambia --method y --host según corresponda.
 #   --method: método de transferencia (http o rsync)
 #   --dist: distribuciones a sincronizar.
-#   	Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
+#       Para Debian 12 (Bookworm) y sus actualizaciones, usamos:
 #       bookworm, bookworm-updates, bookworm-security
 #   --section: secciones a incluir (main, contrib, non-free)
 #   --progress: muestra progreso (opcional)
-#	--verbose: Depura todo lo posible la salida de debmirror
-#	--keyring: Ruta donde esta alojado el anillo de claves del repositorio oficial
-#	--dry-run: Recorre el repostorio oficial y analiza todo lo que necesita descargar pero sin llegar hacerlo.
+#       --verbose: Depura todo lo posible la salida de debmirror
+#       --keyring: Ruta donde esta alojado el anillo de claves del repositorio oficial
+#       --dry-run: Recorre el repostorio oficial y analiza todo lo que necesita descargar pero sin llegar hacerlo.
 #   --ignore-release-gpg: omite la verificación de firmas (opcional; úsalo si tienes problemas con GPG,(no recomendado))
 debmirror \
   --arch=amd64 "$MIRROR_DIR" \
@@ -173,8 +198,12 @@ debmirror \
   --section=main,contrib,non-free,non-free-firmware \
 # --dry-run \
 #  --ignore-release-gpg \
-
 # NOTA: Comentar o descomentar los parametros --dry-run e --ignore-release-gpg, segun sea necesario su uso.
+
+# Finalizar grabacion del log.
+echo ""
+echo "=== Sincronización finalizada: $(date) ==="
+echo ""
 
 ##############################################################################################################################################
 		Una vez creados los script le damos permisos y propietario al usuario que lo vaya a ejecutar.
