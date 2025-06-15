@@ -86,7 +86,7 @@
 				
 				3.1	crear el script main:
 
-					 - nano /usr/local/bin/sync_mirror_main.sh
+					 - nano /usr/local/bin/deb12_main_repo.sh
 
 #!/bin/bash
 
@@ -150,7 +150,7 @@ echo ""
 
 				3.2	crear el script security
 
-					- nano /usr/local/bin/sync_mirror_security.sh
+					- nano /usr/local/bin/deb12_security_repo.sh
 
 
 #!/bin/bash
@@ -212,8 +212,10 @@ echo ""
 
 ##############################################################################################################################################
 		Una vez creados los script le damos permisos y propietario al usuario que lo vaya a ejecutar.
-		 - chown debmirror:debmirror /usr/local/bin/sync_mirror_*
-		 - chmod 750 /usr/local/bin/sync_mirror*
+		 - chown debmirror:debmirror /usr/local/bin/deb12_main_repo.sh
+		 - chown debmirror:debmirror /usr/local/bin/deb12_security_repo.sh
+		 - chmod 750 /usr/local/bin/deb12_main_repo.sh
+ 		 - chmod 750 /usr/local/bin/deb12_security_repo.sh
 
 	4. Configurar nginx para Servir el Repositorio desde /mnt/Almacen/Repositorio/
 
