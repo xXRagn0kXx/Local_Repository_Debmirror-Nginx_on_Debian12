@@ -255,15 +255,31 @@ server {
 		 - sudo nginx -t
 		 - sudo systemctl reload nginx
 
-	4.4 Añadir el repositorio al cliente:
+	4.4 Actualizar el repositorio periódicamente
+		Para mantener el repositorio actualizado, configura un cron que ejecute el script de actualización cada cierto tiempo.
 
-		Edita el fichero /etc/apt/sources.list comentando el repositorio original y añadiendo el nuestro con la IP o DNS del servidor:
-		 - sudo nano /etc/apt/sources.list
+	4.4.1	Edita el archivo de cron:
+		- sudo crontab -e
+	4.4.2	Agrega la siguiente línea para ejecutar el script de actualización cada 6 horas, debmirror analizara las diferencias y solo descargara lo que cambie o aparezca nuevo:
+
+	0 */6 * * * /usr/local/bin/deb12_main_repo.sh
+	0 */6 * * * /usr/local/bin/deb12_security_repo.sh
+
+	Nota: Compobar que las tareas se ejecutan en /mnt/Almacen/Repositorio/*.log
+
+	5 Configurar cliente:
+	5.1 Añadir direccion repositorio al cliente y descomentar el de debian:
+
+		Edita el fichero /etc/apt/sources.list comentando el repositorio original y añadiendo el nuestro con la IP o DNS del servidor: 
+
+			- sudo nano /etc/apt/sources.list
 
 # Repositorio principal original (Bookworm):
 #deb http://deb.debian.org/debian bookworm main contrib
+
 # Repositorio actualizaciones original (Bookworm-Updates):
 #deb http://deb.debian.org/debian bookworm-updates main contrib
+
 # Repositorio security original (Bookworm-Security):
 #deb http://security.debian.org bookworm-security main contrib
 
@@ -278,27 +294,18 @@ deb http://YOUR_IP_OR_DNS/Repositorio/Debian12/security/ bookworm-security main 
 
 ###############################################################################################################################################
 		
-		Guardamos el fichero y ejecutamos:
+		Guardamos el fichero.
+	5.2 Actualizar equipo o instalar paquetes.
+		En el cliente una vez guardado el fichero ejecutamos:
 		 - apt update
 		
-		Si todo sale bien nos mostrara los paquetes nuevos pendientes de descargar, si no tendremos que consultar lso log de /var/log/apt.
+		Si todo sale bien nos mostrara los paquetes nuevos pendientes de descargar o comenzara la instalacion, si no tendremos que consultar los log de /var/log/apt.
 
-	4.6 Actualizar el repositorio periódicamente
-		Para mantener el repositorio sincronizado, configura un cron que ejecute el script de actualización cada cierto tiempo. Por ejemplo, puedes configurarlo para que se ejecute semanalmente:
-
-	4.7.1	Edita el archivo de cron:
-		- sudo crontab -e
-	4.8.2	Agrega la siguiente línea para ejecutar el script de actualización cada 6 horas, debmirror analizara las diferencias y solo descargara lo que cambie o aparezca nuevo:
-
-	0 */6 * * * /usr/local/bin/deb12_main_repo.sh
-	0 */6 * * * /usr/local/bin/deb12_security_repo.sh
-
-	Nota: Compobar que las tareas se ejecutan en /mnt/Almacen/Repositorio/
-
+	
 ##############################################################################################################################################	
 
 	5. Verificación y solución de problemas
-		 - Verificar logs: Revisa /var/log/debmirror.log para verificar si hay errores de sincronización.
+		 - Verificar logs: Compobar como se ejecutan las tareas en /mnt/Almacen/Repositorio/*.log
 		 - Probar acceso: En las máquinas clientes, ejecuta sudo apt update para asegurarte de que puedan conectarse y actualizarse desde el repositorio 	local.
 
 
