@@ -210,23 +210,31 @@ echo ""
 		 - chown debmirror:debmirror /usr/local/bin/sync_mirror_*
 		 - chmod 750 /usr/local/bin/sync_mirror*
 
-	4. Configurar nginx para Servir el Repositorio desde /mnt/Almacen/Repositorio
-		Creamos la configuración de nginx para reflejar la nueva ubicación del repositorio.
+	4. Configurar nginx para Servir el Repositorio desde /mnt/Almacen/Repositorio/
 
-	4.1	Crea el siguiente fichero para Ngix:
-		 - sudo nano /etc/nginx/sites-available/mirror
+		Creamos la configuración de nginx para servir la nueva ubicación del repositorio.
+
+	4.1	Crea el siguiente fichero para Ngix que servira nuestra repositorio:
+		 - sudo nano /etc/nginx/sites-available/Repositorio
 
 	4.2	Modifica el bloque location para que apunte al nuevo directorio:
+		- listen: El puerto
+		- server_name: nombre DNS o IP local
+		- location: lo que escribiremos despues de la IP desde el cliente http://tu_servidor_o_ip/Repositorio/
+		- Alias: ruta a la redirige Nginx
+		- autoindex on; para listar ficheros si no existe pagina web.
+	    Nota: importante las "/" al final ya que esto indica a Nginx que esto es un directorio no un fichero.
 
 server {
     listen 80;
-    server_name tu_servidor_o_ip;
+    server_name 192.168.10.112;
 
-    location /debian {
-        alias /mnt/Almacen/Repositorio;
+    location /Repositorio/ {
+        alias /mnt/Almacen/Repositorio/;
         autoindex on;
     }
 }
+
 ##############################################################################################################################################
 	
 	4.2 Activamos el sitio creado en Nginx mediante un enlace simbolco a la ruta sites-enabled:
