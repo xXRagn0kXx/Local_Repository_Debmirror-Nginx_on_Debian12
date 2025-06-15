@@ -75,8 +75,8 @@
 			2.9 Una vez montado, le concederemos propietario y permisos al usuario que de Nginx que servira los ficheros del disco.
 
 					- mkdir -p /mnt/Almacen/Repositorio
-					- chown -R www-data:www-data /mnt/Almacen
-					- chmod -R 755 /mnt/Almacen
+					- chown -R www-data:www-data /mnt/Almacen/Repositorio
+					- chmod -R 755 /mnt/Almacen/Repositorio
 
 				Con esto ya tenemos configurado el almacenamiento fisico del repositorio. 
 			
