@@ -244,11 +244,34 @@ server {
 		 - sudo nginx -t
 		 - sudo systemctl reload nginx
 
-	4.4 Verificar Acceso desde el Cliente
-		Para comprobar que el repositorio local funciona correctamente, en los clientes agrega las siguientes entradas en /etc/apt/sources.list:
-			deb http://tu_servidor_o_ip/debian bookworm main contrib non-free
-			deb http://tu_servidor_o_ip/debian bookworm-updates main contrib non-free
+	4.4 Añadir el repositorio al cliente:
 
+		Edita el fichero /etc/apt/sources.list comentando el repositorio original y añadiendo el nuestro con la IP o DNS del servidor:
+		 - sudo nano /etc/apt/sources.list
+
+# Repositorio principal original (Bookworm):
+#deb http://deb.debian.org/debian bookworm main contrib
+# Repositorio actualizaciones original (Bookworm-Updates):
+#deb http://deb.debian.org/debian bookworm-updates main contrib
+# Repositorio security original (Bookworm-Security):
+#deb http://security.debian.org bookworm-security main contrib
+
+# Repositorio principal replica (Bookworm):
+deb http://192.168.10.112/Repositorio/Debian12/main/ bookworm main contrib non-free non-free-firmware
+
+# Reposiotio actualizaciones replica (Bookworm-Updates):
+deb http://192.168.10.112/Repositorio/Debian12/main/ bookworm-updates main contrib non-free non-free-firmware
+
+# Repositorio seguridad  replica (Bookworm-Security):
+deb http://192.168.10.112/Repositorio/Debian12/Security/ bookworm-security main contrib non-free non-free-firmware
+
+
+###############################################################################################################################################
+		
+		Guardamos el fichero y ejecutamos:
+		 - apt update
+		
+		Si todo sale bien nos mostrara los paquetes nuevos pendientes de descargar, si no tendremos que consultar lso log de /var/log/apt.
 
 	4.6 Actualizar el repositorio periódicamente
 		Para mantener el repositorio sincronizado, configura un cron que ejecute el script de actualización cada cierto tiempo. Por ejemplo, puedes configurarlo para que se ejecute semanalmente:
